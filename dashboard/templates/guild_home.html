@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}{{ guild.name }} — Overview{% endblock %}
+{% block content %}
+{% import "_icons.html" as icons %}
+<h1>{{ guild.name }}</h1>
+<p class="subtitle">Ticket system overview & configuration.</p>
+
+{% if request.query_params.get("saved") %}<div class="flash">{{ icons.icon("check-circle", 16) }} Settings saved.</div>{% endif %}
+
+<div class="grid">
+  <div class="stat"><div class="num">{{ open_count }}</div><div class="label">Open tickets</div></div>
+  <div class="stat"><div class="num">{{ panel_count }}</div><div class="label">Panels</div></div>
+  <div class="stat"><div class="num">{{ theme_label(cfg.theme) }}</div><div class="label">Theme</div></div>
+  <div class="stat"><div class="num">{{ cfg.prefix }}</div><div class="label">Prefix</div></div>
+</div>
+
+<h2>Configuration</h2>
+<form class="card" method="post" action="/dashboard/{{ guild.id }}/config">
+  <label>Command prefix</label>
+  <input type="text" name="prefix" value="{{ cfg.prefix }}" maxlength="5">
+
+  <label>Theme</label>
+  <select name="theme">
+    {% for t in theme_choices() %}
+    <option value="{{ t }}" {{ "selected" if t == cfg.theme }}>{{ theme_label(t) }}</option>
+    {% endfor %}
+  </select>
+
+  <label>Default ticket category</label>
+  <select name="category_id">
+    <option value="">— none —</option>
+    {% for c in categories %}
+    <option value="{{ c.id }}" {{ "selected" if cfg.category_id == c.id }}>{{ c.name }}</option>
+    {% endfor %}
+  </select>
+  <div class="help">Used when a panel doesn't set its own category.</div>
+
+  <label>Log channel</label>
+  <select name="log_channel_id">
+    <option value="">— none —</option>
+    {% for c in text_channels %}
+    <option value="{{ c.id }}" {{ "selected" if cfg.log_channel_id == c.id }}>#{{ c.name }}</option>
+    {% endfor %}
+  </select>
+
+  <label>Transcript channel</label>
+  <select name="transcript_channel_id">
+    <option value="">— none —</option>
+    {% for c in text_channels %}
+    <option value="{{ c.id }}" {{ "selected" if cfg.transcript_channel_id == c.id }}>#{{ c.name }}</option>
+    {% endfor %}
+  </select>
+  <div class="help">Closed-ticket transcripts are posted here (if set) in addition to the log channel.</div>
+
+  <label>Max open tickets per user</label>
+  <input type="number" name="max_tickets_per_user" min="1" max="25" value="{{ cfg.max_tickets_per_user }}">
+
+  <label>Auto-close after inactivity (hours, 0 = off)</label>
+  <input type="number" name="auto_close_hours" min="0" max="720" value="{{ cfg.auto_close_hours }}">
+
+  <div class="checkbox-row">
+    <input type="checkbox" name="transcripts_enabled" id="transcripts_enabled" {{ "checked" if cfg.transcripts_enabled }}>
+    <label for="transcripts_enabled" style="margin:0;">Generate HTML transcripts when tickets close</label>
+  </div>
+
+  <label>Welcome message (posted in every new ticket)</label>
+  <textarea name="welcome_message">{{ cfg.welcome_message }}</textarea>
+
+  <div style="margin-top:18px;"><button class="btn" type="submit">{{ icons.icon("check-circle", 15) }} Save changes</button></div>
+</form>
+{% endblock %}

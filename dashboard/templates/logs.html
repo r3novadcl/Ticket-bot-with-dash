@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ guild.name }} — Logs{% endblock %}
+{% block content %}
+<h1>Action logs</h1>
+<p class="subtitle">Most recent 150 ticket actions in this server.</p>
+
+<div class="card">
+  {% if rows %}
+  <table>
+    <tr><th>When</th><th>Action</th><th>Ticket</th><th>By</th><th>Detail</th></tr>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.created_at | timestamp }}</td>
+      <td>{{ r.action }}</td>
+      <td>{{ "#" + r.ticket_id | string if r.ticket_id else "—" }}</td>
+      <td>{{ r.actor_name }}</td>
+      <td style="max-width:280px; overflow:hidden; text-overflow:ellipsis;">{{ r.detail or "" }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <div class="empty">No actions logged yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

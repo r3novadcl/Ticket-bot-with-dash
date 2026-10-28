@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Ticket Dashboard{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+{% import "_icons.html" as icons %}
+  <header class="topbar">
+    <a href="{{ '/dashboard/' ~ guild.id if guild else '/dashboard' }}" class="brand">
+      <span class="brand-mark">{{ icons.icon("ticket", 20) }}</span>
+      <span class="brand-text">Ticket<span class="accent-text">Bot</span></span>
+      {% if guild %}<span class="crumb">/</span><span class="guild-name">{{ guild.name }}</span>{% endif %}
+    </a>
+    <div class="topbar-right">
+      {% if session %}
+        <img class="avatar" src="{{ avatar }}" alt="">
+        <span class="username">{{ session.username }}</span>
+        <a class="btn btn-ghost btn-sm" href="/auth/logout">{{ icons.icon("logout", 15) }} Log out</a>
+      {% endif %}
+    </div>
+  </header>
+
+  {% if guild %}
+  <nav class="subnav">
+    <a href="/dashboard/{{ guild.id }}" class="{{ 'active' if active=='home' }}">{{ icons.icon("home", 16) }} Overview</a>
+    <a href="/dashboard/{{ guild.id }}/panels" class="{{ 'active' if active=='panels' }}">{{ icons.icon("panel", 16) }} Panels</a>
+    <a href="/dashboard/{{ guild.id }}/roles" class="{{ 'active' if active=='roles' }}">{{ icons.icon("roles", 16) }} Roles</a>
+    <a href="/dashboard/{{ guild.id }}/tickets" class="{{ 'active' if active=='tickets' }}">{{ icons.icon("tickets", 16) }} Tickets</a>
+    <a href="/dashboard/{{ guild.id }}/blacklist" class="{{ 'active' if active=='blacklist' }}">{{ icons.icon("blacklist", 16) }} Blacklist</a>
+    <a href="/dashboard/{{ guild.id }}/logs" class="{{ 'active' if active=='logs' }}">{{ icons.icon("logs", 16) }} Logs</a>
+    <a href="/dashboard" class="subnav-back">{{ icons.icon("back", 15) }} All servers</a>
+  </nav>
+  {% endif %}
+
+  <main class="content">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}{{ guild.name }} — Panels{% endblock %}
+{% block content %}
+{% import "_icons.html" as icons %}
+<h1>Ticket panels</h1>
+<p class="subtitle">A panel is the message members click to open a ticket.</p>
+
+{% if request.query_params.get("saved") %}<div class="flash">{{ icons.icon("check-circle", 16) }} Panel created.</div>{% endif %}
+{% if request.query_params.get("deleted") %}<div class="flash">{{ icons.icon("check-circle", 16) }} Panel deleted.</div>{% endif %}
+
+<div class="card">
+  {% if panels %}
+  <table>
+    <tr><th>ID</th><th>Title</th><th>Channel</th><th>Theme</th><th></th></tr>
+    {% for p in panels %}
+    <tr>
+      <td>#{{ p.panel_id }}</td>
+      <td>{{ p.title }}</td>
+      <td>#{{ p.channel_name }}</td>
+      <td>{{ theme_label(p.theme) }}</td>
+      <td>
+        <form method="post" action="/dashboard/{{ guild.id }}/panels/{{ p.panel_id }}/delete" style="margin:0;">
+          <button class="btn btn-danger btn-sm" type="submit">{{ icons.icon("trash", 13) }} Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <div class="empty">No panels yet — create one below.</div>
+  {% endif %}
+</div>
+
+<h2>Create a panel</h2>
+<form class="card" method="post" action="/dashboard/{{ guild.id }}/panels/create">
+  <label>Channel</label>
+  <select name="channel_id" required>
+    {% for c in text_channels %}<option value="{{ c.id }}">#{{ c.name }}</option>{% endfor %}
+  </select>
+
+  <label>Title</label>
+  <input type="text" name="title" value="Support Tickets" maxlength="200">
+
+  <label>Description</label>
+  <textarea name="description" maxlength="1500">Click the button below to open a ticket.</textarea>
+
+  <label>Theme</label>
+  <select name="theme">
+    {% for t in theme_choices() %}<option value="{{ t }}">{{ theme_label(t) }}</option>{% endfor %}
+  </select>
+
+  <label>Ticket category (optional — falls back to the server default)</label>
+  <select name="category_id">
+    <option value="">— use server default —</option>
+    {% for c in categories %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+  </select>
+
+  <label>Button label</label>
+  <input type="text" name="button_label" value="Open Ticket" maxlength="80">
+
+  <label>Button emoji (optional, e.g. 🎫 or &lt;:name:id&gt;)</label>
+  <input type="text" name="button_emoji" placeholder="🎫">
+
+  <label>Restrict staff for this panel to one role (optional — leave blank to use the server's staff roles)</label>
+  <select name="staff_role_id">
+    <option value="">— use server staff roles —</option>
+    {% for r in roles %}<option value="{{ r.id }}">{{ r.name }}</option>{% endfor %}
+  </select>
+
+  <div style="margin-top:18px;"><button class="btn" type="submit">{{ icons.icon("plus", 15) }} Create panel</button></div>
+</form>
+{% endblock %}

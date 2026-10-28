@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Ticket Dashboard — Sign in{% endblock %}
+{% block content %}
+{% import "_icons.html" as icons %}
+<div class="hero">
+  <div class="login-card">
+    <div class="login-mark">{{ icons.icon("ticket", 30) }}</div>
+    <h1>Ticket Bot Dashboard</h1>
+    <p class="subtitle">Sign in with Discord to manage panels, roles, tickets and transcripts.</p>
+
+    {% if session %}
+      <a class="btn" style="width:100%; justify-content:center;" href="/dashboard">{{ icons.icon("arrow-right", 16) }} Continue to your servers</a>
+    {% else %}
+      <a class="btn btn-discord" href="/auth/login">{{ icons.icon("discord", 18) }} Continue with Discord</a>
+    {% endif %}
+
+    <div class="login-stats">
+      <div><b>{{ guild_count }}</b>servers</div>
+      <div><b>{{ bot_name }}</b>online</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

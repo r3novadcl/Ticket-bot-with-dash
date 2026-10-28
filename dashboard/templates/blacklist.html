@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ guild.name }} — Blacklist{% endblock %}
+{% block content %}
+{% import "_icons.html" as icons %}
+<h1>Blacklist</h1>
+<p class="subtitle">Blacklisted users can't open new tickets.</p>
+
+{% if request.query_params.get("saved") %}<div class="flash">{{ icons.icon("check-circle", 16) }} User blacklisted.</div>{% endif %}
+{% if request.query_params.get("removed") %}<div class="flash">{{ icons.icon("check-circle", 16) }} User removed from blacklist.</div>{% endif %}
+
+<div class="card">
+  {% if rows %}
+  <table>
+    <tr><th>User</th><th>Reason</th><th></th></tr>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.user_name }}</td>
+      <td>{{ r.reason or "—" }}</td>
+      <td>
+        <form method="post" action="/dashboard/{{ guild.id }}/blacklist/{{ r.user_id }}/remove" style="margin:0;">
+          <button class="btn btn-ghost btn-sm" type="submit">{{ icons.icon("trash", 13) }} Remove</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <div class="empty">No one is blacklisted.</div>
+  {% endif %}
+</div>
+
+<h2>Blacklist a user</h2>
+<form class="card" method="post" action="/dashboard/{{ guild.id }}/blacklist/add">
+  <label>User ID</label>
+  <input type="text" name="user_id" placeholder="Discord user ID" required>
+  <label>Reason (optional)</label>
+  <input type="text" name="reason" maxlength="300">
+  <div style="margin-top:18px;"><button class="btn btn-danger" type="submit">{{ icons.icon("blacklist", 15) }} Blacklist</button></div>
+</form>
+{% endblock %}

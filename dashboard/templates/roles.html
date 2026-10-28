@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ guild.name }} — Roles{% endblock %}
+{% block content %}
+{% import "_icons.html" as icons %}
+<h1>Roles</h1>
+<p class="subtitle">Staff roles can claim/manage any ticket. Senior/escalation roles are the valid transfer targets — they never need Administrator, the bot grants channel access to them directly when a ticket is escalated.</p>
+
+{% if request.query_params.get("saved") %}<div class="flash">{{ icons.icon("check-circle", 16) }} Roles updated.</div>{% endif %}
+
+<form method="post" action="/dashboard/{{ guild.id }}/roles">
+  <div class="card">
+    <h2 style="margin-top:0;">Staff roles</h2>
+    <div class="role-grid">
+      {% for r in roles %}
+      <label class="role-pill" style="margin:0;">
+        <input type="checkbox" name="staff_roles" value="{{ r.id }}" {{ "checked" if r.id in staff_ids }}>
+        {{ r.name }}
+      </label>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Senior / escalation roles</h2>
+    <div class="role-grid">
+      {% for r in roles %}
+      <label class="role-pill" style="margin:0;">
+        <input type="checkbox" name="senior_roles" value="{{ r.id }}" {{ "checked" if r.id in senior_ids }}>
+        {{ r.name }}
+      </label>
+      {% endfor %}
+    </div>
+  </div>
+
+  <button class="btn" type="submit">{{ icons.icon("check-circle", 15) }} Save roles</button>
+</form>
+{% endblock %}

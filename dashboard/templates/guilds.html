@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Your Servers{% endblock %}
+{% block content %}
+<h1>Your servers</h1>
+<p class="subtitle">Servers where you can manage tickets.</p>
+
+{% if guilds %}
+<div class="guild-list">
+  {% for g in guilds %}
+  <a class="guild-card" href="/dashboard/{{ g.id }}">
+    {% if g.icon %}
+      <img class="guild-icon" src="{{ g.icon }}">
+    {% else %}
+      <div class="guild-icon-fallback">{{ g.name[0]|upper }}</div>
+    {% endif %}
+    <span>{{ g.name }}</span>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card empty">No servers found where you have Manage Server permission and the bot is present.</div>
+{% endif %}
+{% endblock %}

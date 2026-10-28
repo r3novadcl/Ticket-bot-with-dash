@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ guild.name }} — Tickets{% endblock %}
+{% block content %}
+{% import "_icons.html" as icons %}
+<h1>Tickets</h1>
+<p class="subtitle">Live view of every ticket. Closed tickets keep a downloadable transcript.</p>
+
+<div class="tabs">
+  <a href="?status=open" class="{{ 'active' if status == 'open' }}">Open</a>
+  <a href="?status=closed" class="{{ 'active' if status == 'closed' }}">Closed</a>
+</div>
+
+<div class="card">
+  {% if tickets %}
+  <table>
+    <tr>
+      <th>#</th><th>Channel</th><th>Opener</th><th>Handler</th><th>Status</th><th>Opened</th><th></th>
+    </tr>
+    {% for t in tickets %}
+    <tr>
+      <td>{{ "%04d"|format(t.number) }}</td>
+      <td>{{ "#" + t.channel_name if t.channel_name else "deleted" }}</td>
+      <td>{{ t.opener_name }}</td>
+      <td>{{ t.handler_name or "—" }}</td>
+      <td><span class="badge badge-{{ t.status }}">{{ t.status }}</span></td>
+      <td>{{ t.created_at | int | timestamp }}</td>
+      <td>
+        {% if t.status == 'closed' %}
+        <a class="btn btn-ghost btn-sm" href="/dashboard/{{ guild.id }}/tickets/{{ t.ticket_id }}/transcript" target="_blank">{{ icons.icon("external", 13) }} Transcript</a>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <div class="empty">No {{ status }} tickets.</div>
+  {% endif %}
+</div>
+{% endblock %}
